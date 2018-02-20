@@ -1,11 +1,11 @@
 class ITetrimino extends Tetrimino {
 
-  constructor(x, y, size) {
+  constructor(x, y) {
     super(x, y)
     this.maxStates = 2
 
     for(var i = 0; i < 4; i++) {
-      this.blocks.push(new Block(x, y, 0, i, size, color(82, 179, 217)))
+      this.blocks.push(new Block(x, y++, color(82, 179, 217)))
     }
   }
 
@@ -13,8 +13,8 @@ class ITetrimino extends Tetrimino {
     switch (this.state) {
       case 0:
         this.blocks.forEach( (b, i) => {
-          b.xyOffset = 0 + this.x
-          b.yOffset = i + this.y
+          b.x = this.x
+          b.y = i + this.y
         })
         break
       case 1:

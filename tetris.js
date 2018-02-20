@@ -14,38 +14,57 @@ class Tetris {
     actual time played (maybe favorize using down arrow )
   */
 
-  constructor(cellSize) {
+  constructor() {
     this.score = 0;
     this.rotating = false
     this.cells = []
     for(var i = 0; i < 200; i++) {
-      this.cells.push(new Cell(i % COLS, floor(i/COLS), cellSize))
+      this.cells.push(new Cell(i % COLS, floor(i/COLS)))
     }
-    
+
     //TODO use cells instead of (x, y) for pieces & blocks
-    this.currentPiece = this.getRandomPiece(0, 0, cellSize)
-    //this.nextPiece = this.getRandomPiece()
+    this.currentPiece = this.getRandomPiece(floor(COLS / 2) - 1, 0)
+    this.nextPiece = this.getRandomPiece(15, 15)
   }
 
-  getRandomPiece(x, y, size) {
+  getRandomPiece(x, y) {
     //TODO change when all implemented
     switch(floor(random(2))) {
       case 0:
-        return new ITetrimino(x, y, size)
+        return new ITetrimino(x, y)
       case 1:
-        return new OTetrimino(x, y, size)
+        return new OTetrimino(x, y)
       case 2:
-        return new TTetrimino(x, y, size)
+        return new TTetrimino(x, y)
       case 3:
-        return new STetrimino(x, y, size)
+        return new STetrimino(x, y)
       case 4:
-        return new ZTetrimino(x, y, size)
+        return new ZTetrimino(x, y)
     }
   }
 
   getCell(x, y) {
     return this.cells[x + y * COLS]
   }
+
+
+  canGoDown() {
+    return this.currentPiece.blocks.reduce( (a, b) => a && (b.y < ROWS-1 ? !this.getCell(b.x, b.y + 1).occupied : false) , true)
+  }
+
+  fixCurrent() {
+    this.currentPiece.blocks.forEach( b => {
+      var c = this.getCell(b.x, b.y)
+      c.occupied = true
+      c.corlor = b.color
+    })
+    //TODO maybe something wiith references here
+    this.currentPiece = this.nextPiece
+    this.currentPiece.x = floor(COLS / 2) - 1
+    this.currentPiece.y = 0
+    this.nextPiece = this.getRandomPiece(15, 15)
+  }
+
 
   update() {
     if(this.rotating) {
@@ -54,7 +73,11 @@ class Tetris {
     }
 
     // always down for now
-    this.currentPiece.down()
+    if(this.canGoDown()) {
+      this.currentPiece.down()
+    } else {
+      this.fixCurrent()
+    }
   }
 
   show() {
@@ -62,7 +85,7 @@ class Tetris {
     this.cells.forEach( c => c.show() )
 
     this.currentPiece.show()
-    //this.nextPiece.show()
+    this.nextPiece.show()
   }
 
 }

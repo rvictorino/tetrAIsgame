@@ -1,18 +1,19 @@
 let game
+// Tetris Guidelines
 const ROWS = 20
 const COLS = 10
+
+const WIDTH = 400
+const SIZE = Math.floor(WIDTH/COLS/2)
 
 
 
 function setup() {
-  createCanvas(200, 400)
-  // Tetris Guidelines
+  createCanvas(WIDTH, 400)
 
-  cellSize = floor(width/COLS)
-  frameRate(5)
+  frameRate(10)
 
-
-  game = new Tetris(cellSize)
+  game = new Tetris()
 }
 
 

@@ -1,15 +1,24 @@
 class Cell {
 
-  constructor(x, y, size) {
+  constructor(x, y) {
     this.x = x
     this.y = y
-    this.size = size
+    this.occupied = false
+    this.color = undefined
   }
 
 
   show() {
     stroke(255)
-    noFill()
-    rect(this.x * this.size, this.y * this.size, this.size, this.size)
+    if(this.color) {
+      fill(color)
+    } else {
+      noFill()
+    }
+    if(!this.occupied) {
+      // debug only
+      fill(0, 255, 0)
+    }
+    rect(this.x * SIZE, this.y * SIZE, SIZE, SIZE)
   }
 }

@@ -16,10 +16,10 @@ class Tetrimino {
     this.update()
   }
 
-  show() { this.blocks.forEach( b => b.show() ) }
-
   rotate() {
     this.state = (this.state + 1) % this.maxStates
     this.update()
   }
+
+  show() { this.blocks.forEach( b => b.show() ) }
 }
