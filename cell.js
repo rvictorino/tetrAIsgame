@@ -11,7 +11,7 @@ class Cell {
   show() {
     stroke(255)
     if(this.color) {
-      fill(color)
+      fill(this.color)
     } else {
       noFill()
     }

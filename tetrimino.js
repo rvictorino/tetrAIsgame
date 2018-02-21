@@ -21,5 +21,9 @@ class Tetrimino {
     this.update()
   }
 
+  moveLR(dir) {
+    this.x += dir
+  }
+
   show() { this.blocks.forEach( b => b.show() ) }
 }

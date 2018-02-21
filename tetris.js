@@ -17,15 +17,25 @@ class Tetris {
   constructor() {
     this.score = 0;
     this.rotating = false
+    this.movingDirection = 0
     this.cells = []
+    this.gameOver = false
+
+    // init game grid
     for(var i = 0; i < 200; i++) {
       this.cells.push(new Cell(i % COLS, floor(i/COLS)))
     }
 
+    // init current and next pieces
     //TODO use cells instead of (x, y) for pieces & blocks
     this.currentPiece = this.getRandomPiece(floor(COLS / 2) - 1, 0)
     this.nextPiece = this.getRandomPiece(15, 15)
   }
+
+  // handy to go from two-dimensionnal (x, y)
+  // to one-dimensionnal cells array
+  getCell(x, y) { return this.cells[x + y * COLS] }
+
 
   getRandomPiece(x, y) {
     //TODO change when all implemented
@@ -43,43 +53,60 @@ class Tetris {
     }
   }
 
-  getCell(x, y) {
-    return this.cells[x + y * COLS]
-  }
-
 
   canGoDown() {
-    return this.currentPiece.blocks.reduce( (a, b) => a && (b.y < ROWS-1 ? !this.getCell(b.x, b.y + 1).occupied : false) , true)
+    // all blocks are higher than bottom and have a free cell underneath
+    return this.currentPiece.blocks.reduce(
+      (a, b) => a && (b.y < ROWS-1 ? !this.getCell(b.x, b.y + 1).occupied : false)
+    , true)
+  }
+
+  //TODO
+  canRotate() {
+    return true
+  }
+
+  canMove() {
+    // all blocks are between edges and have a free cell where it wants to move
+    return this.currentPiece.blocks.reduce(
+      (a, b) => a && ((b.x < COLS-1 && b.x > 0) ? !this.getCell(b.x + this.movingDirection, b.y).occupied : false)
+    , true)
   }
 
   fixCurrent() {
     this.currentPiece.blocks.forEach( b => {
       var c = this.getCell(b.x, b.y)
       c.occupied = true
-      c.corlor = b.color
+      c.color = b.color
     })
     //TODO maybe something wiith references here
-    this.currentPiece = this.nextPiece
-    this.currentPiece.x = floor(COLS / 2) - 1
-    this.currentPiece.y = 0
-    this.nextPiece = this.getRandomPiece(15, 15)
+    this.currentPiece = this.getRandomPiece(floor(COLS / 2) - 1, 0)
+    // this.currentPiece.x = floor(COLS / 2) - 1
+    // this.currentPiece.y = 0
+    // this.nextPiece = this.getRandomPiece(15, 15)
   }
 
-
+  // called in the loop. Update all entities
   update() {
-    if(this.rotating) {
-      this.currentPiece.rotate()
-      this.rotating = false
-    }
-
-    // always down for now
     if(this.canGoDown()) {
       this.currentPiece.down()
     } else {
       this.fixCurrent()
     }
+
+    if(this.rotating && this.canRotate()) {
+      this.currentPiece.rotate()
+      this.rotating = false
+    }
+    if(this.movingDirection !== 0 && this.canMove()) {
+      this.currentPiece.moveLR(this.movingDirection)
+    }
+    // reset state
+    this.rotating = false
+    this.movingDirection = 0
   }
 
+  // called in the loop. Dnaw game and entities
   show() {
     //debug only
     this.cells.forEach( c => c.show() )
