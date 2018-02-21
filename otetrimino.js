@@ -4,10 +4,12 @@ class OTetrimino extends Tetrimino {
     super(x, y)
     this.maxStates = 1
 
-    this.blocks.push(new Block(x, y, color(248, 148, 6)))
-    this.blocks.push(new Block(x+1, y, color(248, 148, 6)))
-    this.blocks.push(new Block(x+1, y+1, color(248, 148, 6)))
-    this.blocks.push(new Block(x, y+1, color(248, 148, 6)))
+    var color = color(245, 171, 53)
+
+    this.blocks.push(new Block(x, y, color))
+    this.blocks.push(new Block(x+1, y, color))
+    this.blocks.push(new Block(x+1, y+1, color)
+    this.blocks.push(new Block(x, y+1, color)
   }
 
   update() {
