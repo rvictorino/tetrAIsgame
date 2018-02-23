@@ -30,12 +30,11 @@ function draw() {
 function keyPressed() {
   // detect human interaction
   // and trigger related action
-  // (change state) and let game update itself)
   if(key == ' ') {
-    game.rotating = true
+    game.rotatePiece()
   } else if(keyCode === LEFT_ARROW) {
-    game.movingDirection = -1
+    game.movePiece(-1)
   } else if(keyCode === RIGHT_ARROW) {
-    game.movingDirection = 1
+    game.movePiece(1)
   }
 }

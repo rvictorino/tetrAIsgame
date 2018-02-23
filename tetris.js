@@ -15,9 +15,7 @@ class Tetris {
   */
 
   constructor() {
-    this.score = 0;
-    this.rotating = false
-    this.movingDirection = 0
+    this.score = 0
     this.cells = []
     this.gameOver = false
 
@@ -54,6 +52,17 @@ class Tetris {
   }
 
 
+
+  // called in the loop. Update all entities
+  update() {
+    if(this.canGoDown()) {
+      this.currentPiece.down()
+    } else {
+      this.fixCurrent()
+      this.deleteLines()
+    }
+  }
+
   canGoDown() {
     // all blocks are higher than bottom and have a free cell underneath
     return this.currentPiece.blocks.reduce(
@@ -66,10 +75,10 @@ class Tetris {
     return true
   }
 
-  canMove() {
+  canMove(direction) {
     // all blocks are between edges and have a free cell where it wants to move
     return this.currentPiece.blocks.reduce(
-      (a, b) => a && ((b.x < COLS-1 && b.x > 0) ? !this.getCell(b.x + this.movingDirection, b.y).occupied : false)
+      (a, b) => a && (direction > 0 ? b.x < COLS-1 : b.x > 0 ? !this.getCell(b.x + direction, b.y).occupied : false)
     , true)
   }
 
@@ -79,31 +88,25 @@ class Tetris {
       c.occupied = true
       c.color = b.color
     })
-    //TODO maybe something wiith references here
+
+    //FIXME maybe something with references here
     this.currentPiece = this.getRandomPiece(floor(COLS / 2) - 1, 0)
     // this.currentPiece.x = floor(COLS / 2) - 1
     // this.currentPiece.y = 0
     // this.nextPiece = this.getRandomPiece(15, 15)
   }
 
-  // called in the loop. Update all entities
-  update() {
-    if(this.canGoDown()) {
-      this.currentPiece.down()
-    } else {
-      this.fixCurrent()
-    }
+  deleteLines() {
+    //TODO
+  }
 
-    if(this.rotating && this.canRotate()) {
-      this.currentPiece.rotate()
-      this.rotating = false
-    }
-    if(this.movingDirection !== 0 && this.canMove()) {
-      this.currentPiece.moveLR(this.movingDirection)
-    }
-    // reset state
-    this.rotating = false
-    this.movingDirection = 0
+
+  rotatePiece() {
+    if(this.canRotate()) { this.currentPiece.rotate() }
+  }
+
+  movePiece(direction) {
+    if(this.canMove(direction)) { this.currentPiece.moveLR(direction) }
   }
 
   // called in the loop. Dnaw game and entities

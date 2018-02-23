@@ -17,6 +17,7 @@ class Tetrimino {
   }
 
   rotate() {
+    console.log('rotate')
     this.state = (this.state + 1) % this.maxStates
     this.update()
   }

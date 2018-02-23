@@ -19,8 +19,8 @@ class ITetrimino extends Tetrimino {
         break
       case 1:
         this.blocks.forEach( (b, i) => {
-          b.xyOffset = i + this.x
-          b.yOffset = 0 + this.y
+          b.x = i + this.x
+          b.y = this.y
         })
         break
     }
