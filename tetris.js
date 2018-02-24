@@ -20,18 +20,17 @@ class Tetris {
     this.cells = []
     this.gameOver = false
     this.fixing = false
+    this.scrolling = false
     this.moving = 0
-    this.rotating = false
 
     // init game grid
-    for(var i = 0; i < 200; i++) {
+    for(var i = 0; i < COLS * ROWS; i++) {
       this.cells.push(new Cell(i % COLS, floor(i/COLS)))
     }
 
     // init current and next pieces
-    //TODO use cells instead of (x, y) for pieces & blocks
     this.currentPiece = this.getRandomPiece(floor(COLS / 2) - 1, 0)
-    this.nextPiece = this.getRandomPiece(15, 15)
+    this.nextPiece = this.getRandomPiece(14, 15)
   }
 
   // handy to go from two-dimensionnal (x, y)
@@ -56,7 +55,7 @@ class Tetris {
   }
 
   get speed() {
-    return floor(50 / this.level)
+    return floor(20 / this.level)
   }
 
 
@@ -64,15 +63,13 @@ class Tetris {
   // called in the loop. Update all entities
   update() {
     // check if game is lost
-    if(this.lose()) {
+    if(this.spaceOccupied()) {
       this.gameOver = true
       console.log('Game Over !')
     }
 
-    if(this.rotating) {
-      this.rotatePiece()
-      this.rotating = false
-    }
+    // this.rotatePiece()
+
     if(this.moving != 0) {
       this.movePiece(this.moving)
       this.moving = 0
@@ -85,16 +82,24 @@ class Tetris {
       // cannot go down: fix next turn
       this.fixing = true
     }
+
     if(this.fixing) {
+      // fix piece to grid
       this.fixCurrent()
+      // manage lines
       this.deleteLines()
       this.fixing = false
+    }
+
+    if(this.scrolling) {
+      this.scrollBoardDown()
+      this.scrolling = false
     }
   }
 
 
-  lose(){
-    return this.currentPiece.blocks.reduce( (a, b) => a || this.getCell(b.x, b.y).occupied, false )
+  spaceOccupied(){
+    return this.currentPiece.blocks.reduce( (a, b) => a || b.x < 0  || b.x > COLS - 1 || this.getCell(b.x, b.y).occupied, false )
   }
 
 
@@ -105,9 +110,17 @@ class Tetris {
     , true)
   }
 
-  //TODO
+
   canRotate() {
-    return true
+    var result = true
+    this.currentPiece.rotate()
+    if(this.spaceOccupied()) {
+      result = false
+    }
+    for(var i = 0; i < this.currentPiece.maxStates - 1; i++) {
+      this.currentPiece.rotate()
+    }
+    return result
   }
 
   canMove(direction) {
@@ -126,19 +139,59 @@ class Tetris {
 
     //FIXME maybe something with references here
     this.currentPiece = this.getRandomPiece(floor(COLS / 2) - 1, 0)
+    //   console.log('a')
+    //   this.currentPiece.rotate()
+    // }OLS / 2) - 1, 0)
     // this.currentPiece.x = floor(COLS / 2) - 1
     // this.currentPiece.y = 0
     // this.nextPiece = this.getRandomPiece(15, 15)
   }
 
   deleteLines() {
+    var lines = this.detectLines()
+    console.log(lines.length)
+    if(lines.length > 0){
+      lines.forEach( l => {
+        l.forEach( c => c.occupied = false )
+      })
+      this.scrolling = true
+    }
+
     //TODO
-    this.score++
-    this.level++
+    this.score += lines.length
+    //this.level++
+  }
+
+
+  detectLines() {
+    var lines = []
+    for(var i = 0; i < ROWS; i++) {
+      var line = []
+      for(var j = 0; j - COLS; j++) {
+        line.push(this.getCell(j, i))
+      }
+      if(line.reduce( (a, c) => a && c.occupied , true)) {
+        lines.push(line)
+      }
+    }
+    return lines
+  }
+
+  scrollBoardDown(lines) {
+    // slice array, add lines up
+    //TODO
+
+    // reset x & y for all cells
+    //TODO
+    // for(var i = 0; i < this.cells.length; i++) {
+    //   this.cells[i].x = i % COLS
+    //   this.cells[i].y = floor(i / ROWS) //TODO <- wrong calculation here
+    // }
   }
 
 
   rotatePiece() {
+    console.log(this.canRotate()  )
     if(this.canRotate()) { this.currentPiece.rotate() }
   }
 

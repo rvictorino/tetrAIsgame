@@ -7,12 +7,13 @@ const ROWS = 20
 const COLS = 10
 // canvas and cells calculation
 const WIDTH = 400
+const HEIGHT = 400
 const SIZE = Math.floor(WIDTH/COLS/2)
 
 
 function setup() {
   // init canvas, speed and game
-  createCanvas(WIDTH, 400)
+  createCanvas(WIDTH, HEIGHT)
   game = new Tetris()
 }
 
@@ -37,7 +38,7 @@ function keyPressed() {
   // and trigger related action
   if(keyCode == UP_ARROW) {
     //game.rotatePiece()
-    game.rotating = true
+    game.rotatePiece()
   } else if(keyCode === LEFT_ARROW) {
     game.moving = -1
   } else if(keyCode === RIGHT_ARROW) {
