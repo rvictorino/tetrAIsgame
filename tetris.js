@@ -16,8 +16,12 @@ class Tetris {
 
   constructor() {
     this.score = 0
+    this.level = 1
     this.cells = []
     this.gameOver = false
+    this.fixing = false
+    this.moving = 0
+    this.rotating = false
 
     // init game grid
     for(var i = 0; i < 200; i++) {
@@ -51,17 +55,48 @@ class Tetris {
     }
   }
 
+  get speed() {
+    return floor(50 / this.level)
+  }
+
 
 
   // called in the loop. Update all entities
   update() {
-    if(this.canGoDown()) {
+    // check if game is lost
+    if(this.lose()) {
+      this.gameOver = true
+      console.log('Game Over !')
+    }
+
+    if(this.rotating) {
+      this.rotatePiece()
+      this.rotating = false
+    }
+    if(this.moving != 0) {
+      this.movePiece(this.moving)
+      this.moving = 0
+    }
+
+    var canGoDown = this.canGoDown()
+    if(canGoDown && !this.fixing) {
       this.currentPiece.down()
-    } else {
+    } else if(!canGoDown) {
+      // cannot go down: fix next turn
+      this.fixing = true
+    }
+    if(this.fixing) {
       this.fixCurrent()
       this.deleteLines()
+      this.fixing = false
     }
   }
+
+
+  lose(){
+    return this.currentPiece.blocks.reduce( (a, b) => a || this.getCell(b.x, b.y).occupied, false )
+  }
+
 
   canGoDown() {
     // all blocks are higher than bottom and have a free cell underneath
@@ -98,6 +133,8 @@ class Tetris {
 
   deleteLines() {
     //TODO
+    this.score++
+    this.level++
   }
 
 
@@ -107,6 +144,11 @@ class Tetris {
 
   movePiece(direction) {
     if(this.canMove(direction)) { this.currentPiece.moveLR(direction) }
+  }
+
+  quickFix() {
+    while(this.canGoDown())
+      this.currentPiece.down()
   }
 
   // called in the loop. Dnaw game and entities
