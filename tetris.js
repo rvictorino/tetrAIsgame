@@ -46,17 +46,20 @@ class Tetris {
       case 0:
         return new ITetrimino(x, y)
       case 1:
-        return new JTetrimino(x, y)
-      case 2:
-        return new LTetrimino(x, y)
-      case 3:
         return new OTetrimino(x, y)
-      case 4:
-        return new STetrimino(x, y)
-      case 5:
-        return new TTetrimino(x, y)
-      case 6:
-        return new ZTetrimino(x, y)
+
+        // case 1:
+        //   return new JTetrimino(x, y)
+        // case 2:
+        //   return new LTetrimino(x, y)
+        // case 3:
+        //   return new OTetrimino(x, y)
+        // case 4:
+        //   return new STetrimino(x, y)
+        // case 5:
+        //   return new TTetrimino(x, y)
+        // case 6:
+        //   return new ZTetrimino(x, y)
     }
   }
 
@@ -111,6 +114,7 @@ class Tetris {
 
   canGoDown() {
     // all blocks are higher than bottom and have a free cell underneath
+    console.log()
     return this.currentPiece.blocks.reduce(
       (a, b) => a && (b.y < ROWS - 1 ? !this.getCell(b.x, b.y + 1).occupied : false), true)
   }
@@ -215,7 +219,11 @@ class Tetris {
   // called in the loop. Dnaw game and entities
   show() {
     //debug only
-    this.cells.forEach(c => c.show())
+    this.cells.forEach((c, i) => {
+      if (i >= INVISIBLE_CELLS) {
+        c.show()
+      }
+    })
 
     this.currentPiece.show()
     this.nextPiece.show()

@@ -5,11 +5,11 @@ class Block {
     this.y = y
     this.color = color
   }
-  
+
 
   show() {
     fill(this.color)
     noStroke()
-    rect(this.x * SIZE, this.y * SIZE, SIZE, SIZE)
+    rect(this.x * SIZE, (this.y - 2) * SIZE, SIZE, SIZE)
   }
 }
