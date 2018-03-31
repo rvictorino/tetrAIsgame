@@ -21,10 +21,13 @@ class Tetris {
     this.gameOver = false
     this.fixing = false
     this.scrolling = false
-    this.moving = 0
+    this.deleting = false
+
+    this.actionCooldown = true
+    this.downCooldown = true
 
     // init game grid
-    for (var i = 0; i < COLS * ROWS; i++) {
+    for (var i = 0 - INVISIBLE_CELLS; i < COLS * ROWS; i++) {
       this.cells.push(new Cell(i % COLS, floor(i / COLS)))
     }
 
@@ -36,7 +39,7 @@ class Tetris {
   // handy to go from two-dimensionnal (x, y)
   // to one-dimensionnal cells array
   getCell(x, y) {
-    return this.cells[x + y * COLS]
+    return this.cells[INVISIBLE_CELLS + x + y * COLS]
   }
 
 
@@ -77,32 +80,34 @@ class Tetris {
       console.log('Game Over !')
     }
 
-    // this.rotatePiece()
+    if (this.downCooldown) {
+      this.downCooldown = false
+      this.resetDownCooldown()
+      var canGoDown = this.canGoDown()
+      if (canGoDown && !this.fixing) {
+        this.currentPiece.down()
+      } else if (!canGoDown) {
+        // cannot go down: fix next turn
+        this.fixing = true
+      }
 
-    if (this.moving != 0) {
-      this.movePiece(this.moving)
-      this.moving = 0
-    }
+      if (this.deleting) {
+        this.deleteLines()
+        this.deleting = false
+      }
 
-    var canGoDown = this.canGoDown()
-    if (canGoDown && !this.fixing) {
-      this.currentPiece.down()
-    } else if (!canGoDown) {
-      // cannot go down: fix next turn
-      this.fixing = true
-    }
+      if (this.fixing) {
+        // fix piece to grid
+        this.fixCurrent()
+        // manage lines
+        this.fixing = false
 
-    if (this.fixing) {
-      // fix piece to grid
-      this.fixCurrent()
-      // manage lines
-      this.deleteLines()
-      this.fixing = false
-    }
-
-    if (this.scrolling) {
-      this.scrollBoardDown()
-      this.scrolling = false
+        this.detectLinesToDelete()
+      }
+      // if (this.scrolling) {
+      //   this.scrollBoardDown()
+      //   this.scrolling = false
+      // }
     }
   }
 
@@ -114,7 +119,6 @@ class Tetris {
 
   canGoDown() {
     // all blocks are higher than bottom and have a free cell underneath
-    console.log()
     return this.currentPiece.blocks.reduce(
       (a, b) => a && (b.y < ROWS - 1 ? !this.getCell(b.x, b.y + 1).occupied : false), true)
   }
@@ -147,59 +151,52 @@ class Tetris {
 
     //FIXME maybe something with references here
     this.currentPiece = this.getRandomPiece(floor(COLS / 2) - 1, 0)
-    //   console.log('a')
-    //   this.currentPiece.rotate()
-    // }OLS / 2) - 1, 0)
-    // this.currentPiece.x = floor(COLS / 2) - 1
-    // this.currentPiece.y = 0
     // this.nextPiece = this.getRandomPiece(15, 15)
   }
 
+  detectLinesToDelete() {
+    for (var i = this.cells.length - COLS; i >= 0; i -= COLS) {
+      var line = this.cells.slice(i, i + COLS)
+      if (line.reduce((a, c) => a && c.occupied, true)) {
+        //TODO background should be part of game object?
+        line.forEach((c) => c.color = color(51))
+        this.deleting = true
+      }
+    }
+  }
+
   deleteLines() {
-    var lines = this.detectLines()
-    console.log(lines.length)
-    if (lines.length > 0) {
-      lines.forEach(l => {
-        l.forEach(c => c.occupied = false)
-      })
-      this.scrolling = true
+    var count = 0
+    for (var i = this.cells.length - COLS; i >= 0; i -= COLS) {
+      var line = this.cells.slice(i, i + COLS)
+      if (line.reduce((a, c) => a && c.occupied, true)) {
+        count++
+        this.cells.splice(INVISIBLE_CELLS + line[0].y * COLS, COLS)
+        // add empty line on top, x,y will be updated just after
+        var newLine = new Array(COLS).fill(0).map(() => new Cell(0, 0))
+        // we need to spread the created array into splice arguments list
+        this.cells.unshift(...newLine)
+        this.updateCellsXY()
+        // restart for bottom
+        i = this.cells.length
+      }
     }
 
     //TODO
-    this.score += lines.length
+    this.score += count
     //this.level++
   }
 
-
-  detectLines() {
-    var lines = []
-    for (var i = 0; i < ROWS; i++) {
-      var line = []
-      for (var j = 0; j - COLS; j++) {
-        line.push(this.getCell(j, i))
-      }
-      if (line.reduce((a, c) => a && c.occupied, true)) {
-        lines.push(line)
-      }
-    }
-    return lines
+  updateCellsXY() {
+    this.cells.forEach((c, i) => {
+      c.x = i % COLS
+      c.y = floor(i / COLS) - INVISIBLE_ROWS
+    })
   }
 
-  scrollBoardDown(lines) {
-    // slice array, add lines up
-    //TODO
-
-    // reset x & y for all cells
-    //TODO
-    // for(var i = 0; i < this.cells.length; i++) {
-    //   this.cells[i].x = i % COLS
-    //   this.cells[i].y = floor(i / ROWS) //TODO <- wrong calculation here
-    // }
-  }
 
 
   rotatePiece() {
-    console.log(this.canRotate())
     if (this.canRotate()) {
       this.currentPiece.rotate()
     }
@@ -215,6 +212,16 @@ class Tetris {
     while (this.canGoDown())
       this.currentPiece.down()
   }
+
+
+  resetActionCooldown() {
+    setTimeout(() => this.actionCooldown = true, 200)
+  }
+
+  resetDownCooldown() {
+    setTimeout(() => this.downCooldown = true, this.speed * 10)
+  }
+
 
   // called in the loop. Dnaw game and entities
   show() {

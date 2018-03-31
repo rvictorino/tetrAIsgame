@@ -3,9 +3,10 @@ let game
 let i = 0
 
 //TODO follow Tetris Guidelines: 22 rows, 2 hidden at top
-const ROWS = 22
+const INVISIBLE_ROWS = 2
+const ROWS = 20 + INVISIBLE_ROWS
 const COLS = 10
-const INVISIBLE_CELLS = 20 // first 2 rows are hidden
+const INVISIBLE_CELLS = INVISIBLE_ROWS * COLS // first 2 rows are hidden
 // canvas and cells calculation
 const WIDTH = 400
 const HEIGHT = 400
@@ -24,27 +25,40 @@ function draw() {
   background(51)
   if (!game.gameOver) {
     // update game and entities state
-    if (i == game.speed) {
-      game.update()
-    }
+    game.update()
     // draw entities
     game.show()
   }
-  i = i >= game.speed ? 0 : i + 1
 }
 
 
 function keyPressed() {
+
+  // define delay between actions
+  if (!game.actionCooldown) {
+    return
+  }
+
+  // start cooldown
+  if ([UP_ARROW, LEFT_ARROW, RIGHT_ARROW, DOWN_ARROW].includes(keyCode)) {
+    game.actionCooldown = false
+    game.resetActionCooldown()
+  }
+
   // detect human interaction
   // and trigger related action
-  if (keyCode == UP_ARROW) {
-    //game.rotatePiece()
-    game.rotatePiece()
-  } else if (keyCode === LEFT_ARROW) {
-    game.moving = -1
-  } else if (keyCode === RIGHT_ARROW) {
-    game.moving = 1
-  } else if (keyCode === DOWN_ARROW) {
-    game.quickFix()
+  switch (keyCode) {
+    case UP_ARROW:
+      game.rotatePiece()
+      break
+    case LEFT_ARROW:
+      game.movePiece(-1)
+      break
+    case RIGHT_ARROW:
+      game.movePiece(1)
+      break
+    case DOWN_ARROW:
+      game.quickFix()
+      break
   }
 }

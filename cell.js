@@ -17,7 +17,7 @@ class Cell {
     }
     if (!this.occupied) {
       // debug only
-      fill(0, 255, 0)
+      // fill(0, 255, 0)
     }
     rect(this.x * SIZE, (this.y - 2) * SIZE, SIZE, SIZE)
   }
