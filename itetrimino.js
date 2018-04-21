@@ -2,26 +2,54 @@ class ITetrimino extends Tetrimino {
 
   constructor(x, y) {
     super(x, y)
-    this.maxStates = 2
 
-    for(var i = 0; i < 4; i++) {
-      this.blocks.push(new Block(x, y++, color(82, 179, 217)))
+    for (var i = 0; i < 4; i++) {
+      this.blocks.push(new Block(x, y, color(82, 179, 217)))
     }
+    this.update()
   }
 
   update() {
     switch (this.state) {
       case 0:
-        this.blocks.forEach( (b, i) => {
-          b.x = this.x
-          b.y = i + this.y
-        })
+        this.blocks[0].x = this.x
+        this.blocks[0].y = this.y + 1
+        this.blocks[1].x = this.x + 1
+        this.blocks[1].y = this.y + 1
+        this.blocks[2].x = this.x + 2
+        this.blocks[2].y = this.y + 1
+        this.blocks[3].x = this.x + 3
+        this.blocks[3].y = this.y + 1
         break
       case 1:
-        this.blocks.forEach( (b, i) => {
-          b.x = i + this.x
-          b.y = this.y
-        })
+        this.blocks[0].x = this.x + 2
+        this.blocks[0].y = this.y
+        this.blocks[1].x = this.x + 2
+        this.blocks[1].y = this.y + 1
+        this.blocks[2].x = this.x + 2
+        this.blocks[2].y = this.y + 2
+        this.blocks[3].x = this.x + 2
+        this.blocks[3].y = this.y + 3
+        break
+      case 2:
+        this.blocks[0].x = this.x
+        this.blocks[0].y = this.y + 2
+        this.blocks[1].x = this.x + 1
+        this.blocks[1].y = this.y + 2
+        this.blocks[2].x = this.x + 2
+        this.blocks[2].y = this.y + 2
+        this.blocks[3].x = this.x + 3
+        this.blocks[3].y = this.y + 2
+        break
+      case 3:
+        this.blocks[0].x = this.x + 1
+        this.blocks[0].y = this.y
+        this.blocks[1].x = this.x + 1
+        this.blocks[1].y = this.y + 1
+        this.blocks[2].x = this.x + 1
+        this.blocks[2].y = this.y + 2
+        this.blocks[3].x = this.x + 1
+        this.blocks[3].y = this.y + 3
         break
     }
   }

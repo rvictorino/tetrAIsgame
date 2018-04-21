@@ -13,11 +13,11 @@ class Tetrimino {
 
   down() {
     this.y++
-    this.update()
+      this.update()
   }
 
   rotate() {
-    this.state = (this.state + 1) % this.maxStates
+    this.state = (this.state + 1) % MAX_ROTATIONS
     this.update()
   }
 
@@ -25,5 +25,7 @@ class Tetrimino {
     this.x += dir
   }
 
-  show() { this.blocks.forEach( b => b.show() ) }
+  show() {
+    this.blocks.forEach(b => b.show())
+  }
 }

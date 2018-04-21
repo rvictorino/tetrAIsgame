@@ -44,25 +44,22 @@ class Tetris {
 
 
   getRandomPiece(x, y) {
-    //TODO change when all implemented
-    switch (floor(random(2))) {
+    //TODO change default spawn point for each tetrimino
+    switch (floor(random(7))) {
       case 0:
         return new ITetrimino(x, y)
       case 1:
         return new OTetrimino(x, y)
-
-        // case 1:
-        //   return new JTetrimino(x, y)
-        // case 2:
-        //   return new LTetrimino(x, y)
-        // case 3:
-        //   return new OTetrimino(x, y)
-        // case 4:
-        //   return new STetrimino(x, y)
-        // case 5:
-        //   return new TTetrimino(x, y)
-        // case 6:
-        //   return new ZTetrimino(x, y)
+      case 2:
+        return new JTetrimino(x, y)
+      case 3:
+        return new LTetrimino(x, y)
+      case 4:
+        return new STetrimino(x, y)
+      case 5:
+        return new ZTetrimino(x, y)
+      case 6:
+        return new TTetrimino(x, y)
     }
   }
 
@@ -130,7 +127,7 @@ class Tetris {
     if (this.spaceOccupied()) {
       result = false
     }
-    for (var i = 0; i < this.currentPiece.maxStates - 1; i++) {
+    for (var i = 0; i < MAX_ROTATIONS - 1; i++) {
       this.currentPiece.rotate()
     }
     return result

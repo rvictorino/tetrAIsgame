@@ -2,11 +2,12 @@
 let game
 let i = 0
 
-//TODO follow Tetris Guidelines: 22 rows, 2 hidden at top
+// follows Tetris Guidelines: 22 rows, 2 hidden at top
 const INVISIBLE_ROWS = 2
 const ROWS = 20 + INVISIBLE_ROWS
 const COLS = 10
 const INVISIBLE_CELLS = INVISIBLE_ROWS * COLS // first 2 rows are hidden
+const MAX_ROTATIONS = 4
 // canvas and cells calculation
 const WIDTH = 400
 const HEIGHT = 400
