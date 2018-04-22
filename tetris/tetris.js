@@ -254,4 +254,63 @@ class Tetris {
     text(this.score, COLS * SIZE + SIZE, SIZE * 3)
   }
 
+
+  /* related to nn */
+  getTetriminoType(tetrimino) {
+    var types = [ITetrimino, JTetrimino, LTetrimino, OTetrimino, STetrimino, TTetrimino, ZTetrimino]
+    for (var i = 0; i < types.length; i++) {
+      if (tetrimino instanceof types[i]) {
+        return i
+      }
+    }
+    return undefined
+  }
+
+  normalizedInputs() {
+    var piecesData = [
+      map(this.getTetriminoType(this.currentPiece), 0, 7, 0, 1), // current piece type
+      map(this.currentPiece.x, 0, COLS - 1, 0, 1), // current piece x
+      map(this.currentPiece.y, 0, ROWS - 1, 0, 1), // current piece y
+      map(this.getTetriminoType(this.nextPiece), 0, 7, 0, 1), // next piece type
+      map(this.nextPiece.x, 0, COLS - 1, 0, 1), // next piece x
+      map(this.nextPiece.y, 0, ROWS - 1, 0, 1), // next piece y
+    ]
+    var cellsData = this.cells.reduce((a, arr) => a.concat(arr), []).map(c => c.occupied ? 1 : 0)
+    return piecesData.concat(cellsData)
+  }
+
+  performAction(predictions) {
+    var maxScoreIndex = 0
+    for (var i = 1; i < predictions.length; i++) {
+      if (predictions[i] > predictions[i - 1]) {
+        maxScoreIndex = i
+      }
+    }
+    switch (maxScoreIndex) {
+      case 0:
+        // Arrow down
+        // console.log('down')
+        this.quickFix()
+        break
+      case 1:
+        // arrow up
+        // console.log('up')
+        this.rotatePiece()
+        break
+      case 2:
+        // arrow left
+        // console.log('left')
+        this.movePiece(-1)
+        break
+      case 3:
+        // arrow right
+        // console.log('right')
+        this.movePiece(-1)
+        break
+      case 4:
+        // no action performed
+        // console.log('no action')
+        break
+    }
+  }
 }
