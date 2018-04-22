@@ -8,10 +8,12 @@ const ROWS = 20 + INVISIBLE_ROWS
 const COLS = 10
 const INVISIBLE_CELLS = INVISIBLE_ROWS * COLS // first 2 rows are hidden
 const MAX_ROTATIONS = 4
+
 // canvas and cells calculation
-const WIDTH = 400
-const HEIGHT = 400
-const SIZE = Math.floor(WIDTH / COLS / 2)
+const BASE_WIDTH = 400
+const SIZE = Math.floor(2 * (BASE_WIDTH) / 3 / COLS)
+const WIDTH = (COLS + 6) * SIZE
+const HEIGHT = (ROWS - INVISIBLE_ROWS) * SIZE
 
 
 function setup() {
@@ -23,7 +25,7 @@ function setup() {
 
 function draw() {
   // clear canvas
-  background(51)
+  background(52, 73, 94)
   if (!game.gameOver) {
     // update game and entities state
     game.update()
@@ -34,18 +36,6 @@ function draw() {
 
 
 function keyPressed() {
-
-  // define delay between actions
-  if (!game.actionCooldown) {
-    return
-  }
-
-  // start cooldown
-  if ([UP_ARROW, LEFT_ARROW, RIGHT_ARROW, DOWN_ARROW].includes(keyCode)) {
-    game.actionCooldown = false
-    game.resetActionCooldown()
-  }
-
   // detect human interaction
   // and trigger related action
   switch (keyCode) {

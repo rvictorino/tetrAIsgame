@@ -4,16 +4,16 @@ class Tetrimino {
     make one tetrimino by type with its own
     update function
   */
-  constructor(x, y) {
-    this.x = x
-    this.y = y
+  constructor() {
+    this.x = COLS / 2 - 2
+    this.y = -1
     this.blocks = []
     this.state = 0
   }
 
   down() {
-    this.y++
-      this.update()
+    this.y += 1
+    this.update()
   }
 
   rotate() {
@@ -25,7 +25,7 @@ class Tetrimino {
     this.x += dir
   }
 
-  show() {
-    this.blocks.forEach(b => b.show())
+  show(x, y) {
+    this.blocks.forEach(b => b.show(x, y))
   }
 }

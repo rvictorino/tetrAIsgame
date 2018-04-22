@@ -9,15 +9,11 @@ class Cell {
 
 
   show() {
-    stroke(255)
+    noStroke()
     if (this.color) {
       fill(this.color)
     } else {
       noFill()
-    }
-    if (!this.occupied) {
-      // debug only
-      // fill(0, 255, 0)
     }
     rect(this.x * SIZE, (this.y - 2) * SIZE, SIZE, SIZE)
   }

@@ -23,7 +23,6 @@ class Tetris {
     this.scrolling = false
     this.deleting = false
 
-    this.actionCooldown = true
     this.downCooldown = true
 
     // init game grid
@@ -32,8 +31,8 @@ class Tetris {
     }
 
     // init current and next pieces
-    this.currentPiece = this.getRandomPiece(floor(COLS / 2) - 1, 0)
-    this.nextPiece = this.getRandomPiece(14, 15)
+    this.currentPiece = this.getRandomPiece()
+    this.nextPiece = this.getRandomPiece()
   }
 
   // handy to go from two-dimensionnal (x, y)
@@ -43,23 +42,23 @@ class Tetris {
   }
 
 
-  getRandomPiece(x, y) {
+  getRandomPiece() {
     //TODO change default spawn point for each tetrimino
     switch (floor(random(7))) {
       case 0:
-        return new ITetrimino(x, y)
+        return new ITetrimino()
       case 1:
-        return new OTetrimino(x, y)
+        return new OTetrimino()
       case 2:
-        return new JTetrimino(x, y)
+        return new JTetrimino()
       case 3:
-        return new LTetrimino(x, y)
+        return new LTetrimino()
       case 4:
-        return new STetrimino(x, y)
+        return new STetrimino()
       case 5:
-        return new ZTetrimino(x, y)
+        return new ZTetrimino()
       case 6:
-        return new TTetrimino(x, y)
+        return new TTetrimino()
     }
   }
 
@@ -101,10 +100,6 @@ class Tetris {
 
         this.detectLinesToDelete()
       }
-      // if (this.scrolling) {
-      //   this.scrollBoardDown()
-      //   this.scrolling = false
-      // }
     }
   }
 
@@ -147,8 +142,8 @@ class Tetris {
     })
 
     //FIXME maybe something with references here
-    this.currentPiece = this.getRandomPiece(floor(COLS / 2) - 1, 0)
-    // this.nextPiece = this.getRandomPiece(15, 15)
+    this.currentPiece = this.nextPiece
+    this.nextPiece = this.getRandomPiece()
   }
 
   detectLinesToDelete() {
@@ -210,11 +205,6 @@ class Tetris {
       this.currentPiece.down()
   }
 
-
-  resetActionCooldown() {
-    setTimeout(() => this.actionCooldown = true, 200)
-  }
-
   resetDownCooldown() {
     setTimeout(() => this.downCooldown = true, this.speed * 10)
   }
@@ -222,7 +212,9 @@ class Tetris {
 
   // called in the loop. Dnaw game and entities
   show() {
-    //debug only
+    fill(44, 62, 80)
+    rect(COLS * SIZE, 0, WIDTH - COLS * SIZE, ROWS * SIZE)
+
     this.cells.forEach((c, i) => {
       if (i >= INVISIBLE_CELLS) {
         c.show()
@@ -230,7 +222,7 @@ class Tetris {
     })
 
     this.currentPiece.show()
-    this.nextPiece.show()
+    this.nextPiece.show(8, 16)
   }
 
 }

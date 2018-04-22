@@ -7,9 +7,11 @@ class Block {
   }
 
 
-  show() {
+  show(x, y) {
+    var xOffset = x || 0
+    var yOffset = y || 0
     fill(this.color)
     noStroke()
-    rect(this.x * SIZE, (this.y - 2) * SIZE, SIZE, SIZE)
+    rect((this.x + xOffset) * SIZE, (this.y - 2 + yOffset) * SIZE, SIZE, SIZE)
   }
 }

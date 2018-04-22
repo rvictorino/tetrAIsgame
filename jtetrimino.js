@@ -1,10 +1,10 @@
 class JTetrimino extends Tetrimino {
 
-  constructor(x, y) {
-    super(x, y)
+  constructor() {
+    super()
 
     for (var i = 0; i < 4; i++) {
-      this.blocks.push(new Block(x, y, color(41, 128, 185)))
+      this.blocks.push(new Block(this.x, this.y, color(41, 128, 185)))
     }
     this.update()
   }

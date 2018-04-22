@@ -1,10 +1,10 @@
 class ZTetrimino extends Tetrimino {
 
-  constructor(x, y) {
-    super(x, y)
+  constructor() {
+    super()
 
     for (var i = 0; i < 4; i++) {
-      this.blocks.push(new Block(x, y, color(231, 76, 60)))
+      this.blocks.push(new Block(this.x, this.y, color(231, 76, 60)))
     }
     this.update()
   }

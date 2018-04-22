@@ -1,10 +1,10 @@
 class OTetrimino extends Tetrimino {
 
-  constructor(x, y, size) {
-    super(x, y)
+  constructor() {
+    super()
 
     for (var i = 0; i < 4; i++) {
-      this.blocks.push(new Block(x, y, color(241, 196, 15)))
+      this.blocks.push(new Block(this.x, this.y, color(241, 196, 15)))
     }
     this.update()
   }
