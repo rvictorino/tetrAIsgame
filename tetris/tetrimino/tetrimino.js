@@ -14,9 +14,6 @@ class Tetrimino {
   }
 
   down() {
-    // debug option
-    if (noDown)
-      return
     this.y += 1
     this.update()
     this.computeNextState()
