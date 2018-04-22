@@ -6,23 +6,39 @@ class Tetrimino {
   */
   constructor() {
     this.x = COLS / 2 - 2
-    this.y = -1
+    this.y = 0
     this.blocks = []
+    this.next = []
     this.state = 0
+    this.nextState = 1
   }
 
   down() {
+    // debug option
+    if (noDown)
+      return
     this.y += 1
     this.update()
+    this.computeNextState()
   }
 
   rotate() {
     this.state = (this.state + 1) % MAX_ROTATIONS
+    this.nextState = (this.state + 1) % MAX_ROTATIONS
     this.update()
+    this.computeNextState()
+  }
+
+  update() {}
+
+  computeNextState() {
+    this.update(true)
   }
 
   moveLR(dir) {
     this.x += dir
+    this.update()
+    this.computeNextState()
   }
 
   show(x, y) {

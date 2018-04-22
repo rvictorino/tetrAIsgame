@@ -26,8 +26,12 @@ class Tetris {
     this.downCooldown = true
 
     // init game grid
-    for (var i = 0 - INVISIBLE_CELLS; i < COLS * ROWS; i++) {
-      this.cells.push(new Cell(i % COLS, floor(i / COLS)))
+    for (var x = 0; x < COLS; x++) {
+      var col = []
+      for (var y = 0; y < ROWS; y++) {
+        col.push(new Cell(x, y))
+      }
+      this.cells.push(col)
     }
 
     // init current and next pieces
@@ -38,12 +42,14 @@ class Tetris {
   // handy to go from two-dimensionnal (x, y)
   // to one-dimensionnal cells array
   getCell(x, y) {
-    return this.cells[INVISIBLE_CELLS + x + y * COLS]
+    // return this.cells[INVISIBLE_CELLS + x + y * COLS]
+    if (x < 0 || x > COLS - 1 || y < 0 || y > ROWS)
+      return undefined
+    return this.cells[x][y]
   }
 
 
   getRandomPiece() {
-    //TODO change default spawn point for each tetrimino
     switch (floor(random(7))) {
       case 0:
         return new ITetrimino()
@@ -105,33 +111,51 @@ class Tetris {
 
 
   spaceOccupied() {
-    return this.currentPiece.blocks.reduce((a, b) => a || b.x < 0 || b.x > COLS - 1 || this.getCell(b.x, b.y).occupied, false)
+    // return this.currentPiece.blocks.reduce((a, b) => a || b.x < 0 || b.x > COLS - 1 || this.getCell(b.x, b.y).occupied, false)
+    // be more effective with breaking when possible
+    for (var b of this.currentPiece.blocks) {
+      var cell = this.getCell(b.x, b.y)
+      if (cell == undefined || cell.occupied) {
+        return true
+      }
+    }
+    return false
   }
 
 
   canGoDown() {
     // all blocks are higher than bottom and have a free cell underneath
-    return this.currentPiece.blocks.reduce(
-      (a, b) => a && (b.y < ROWS - 1 ? !this.getCell(b.x, b.y + 1).occupied : false), true)
+    for (var b of this.currentPiece.blocks) {
+      var cell = this.getCell(b.x, b.y + 1)
+      if (cell == undefined || cell.occupied) {
+        return false
+      }
+    }
+    return true
   }
 
 
   canRotate() {
-    var result = true
-    this.currentPiece.rotate()
-    if (this.spaceOccupied()) {
-      result = false
+    // be more effective with breaking when possible
+    for (var b of this.currentPiece.next) {
+      var cell = this.getCell(b.x, b.y)
+      if (cell == undefined || cell.occupied) {
+        return false
+      }
     }
-    for (var i = 0; i < MAX_ROTATIONS - 1; i++) {
-      this.currentPiece.rotate()
-    }
-    return result
+    return true
   }
 
   canMove(direction) {
     // all blocks are between edges and have a free cell where it wants to move
-    return this.currentPiece.blocks.reduce(
-      (a, b) => a && (direction > 0 ? b.x < COLS - 1 : b.x > 0 ? !this.getCell(b.x + direction, b.y).occupied : false), true)
+    // be more effective with breaking when possible
+    for (var b of this.currentPiece.blocks) {
+      var cell = this.getCell(b.x + direction, b.y)
+      if (b.x + direction < 0 || b.x + direction > ROWS - 1 || cell == undefined || cell.occupied) {
+        return false
+      }
+    }
+    return true
   }
 
   fixCurrent() {
@@ -141,7 +165,6 @@ class Tetris {
       c.color = b.color
     })
 
-    //FIXME maybe something with references here
     this.currentPiece = this.nextPiece
     this.nextPiece = this.getRandomPiece()
   }
@@ -151,7 +174,7 @@ class Tetris {
       var line = this.cells.slice(i, i + COLS)
       if (line.reduce((a, c) => a && c.occupied, true)) {
         //TODO background should be part of game object?
-        line.forEach((c) => c.color = color(51))
+        line.forEach((c) => c.color = color(44, 62, 80))
         this.deleting = true
       }
     }
@@ -215,10 +238,12 @@ class Tetris {
     fill(44, 62, 80)
     rect(COLS * SIZE, 0, WIDTH - COLS * SIZE, ROWS * SIZE)
 
-    this.cells.forEach((c, i) => {
-      if (i >= INVISIBLE_CELLS) {
-        c.show()
-      }
+    this.cells.forEach(col => {
+      col.forEach((c, i) => {
+        if (i >= INVISIBLE_ROWS) {
+          c.show()
+        }
+      })
     })
 
     this.currentPiece.show()

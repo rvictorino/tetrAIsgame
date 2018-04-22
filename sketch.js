@@ -1,6 +1,11 @@
 // Game instance
 let game
 let i = 0
+let noDown = false
+
+function toggleDown() {
+  noDown = !noDown
+}
 
 // follows Tetris Guidelines: 22 rows, 2 hidden at top
 const INVISIBLE_ROWS = 2
