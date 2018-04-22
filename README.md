@@ -11,6 +11,6 @@ This version follows [Tetris Guideline](http://tetris.wikia.com/wiki/Tetris_Guid
 
 ## Progress
 - [x] Tetris game following Tetris Guideline
-- [] Prepare data for NN: (normalizing...)
-- [] Use Genetic Algorithm to "train" Neural Network
-- [] Maybe submit to [The Coding Train](https://github.com/CodingTrain), since this project is highly inspired by them. 
+- [ ] Prepare data for NN: (normalizing...)
+- [ ] Use Genetic Algorithm to "train" Neural Network
+- [ ] Maybe submit to [The Coding Train](https://github.com/CodingTrain), since this project is highly inspired by them. 
