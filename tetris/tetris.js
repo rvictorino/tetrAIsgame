@@ -15,6 +15,7 @@ class Tetris {
   */
 
   constructor(nn) {
+    this.startTime = Date.now()
     this.score = 0
     this.level = 1
     this.cells = []
@@ -81,7 +82,7 @@ class Tetris {
     // check if game is lost
     if (this.spaceOccupied()) {
       this.gameOver = true
-      console.log('Game Over !')
+      console.log(`Game Over: score: ${this.score}, time played: ${Date.now() - this.startTime}`)
     }
 
     if (this.downCooldown) {
