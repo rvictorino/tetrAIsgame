@@ -169,6 +169,27 @@ class NeuralNetwork {
     this.bias_o.map(func);
   }
 
+  // Crossover for neuro-evolution
+  crossover(firstParent, secondParent) {
+    let half = Math.floor(this.rows / 2);
+    let firstHalfZeros = (val, i, j) => i <= half ? 0 : val
+    let secondHalfZeros = (val, i, j) => i > half ? 0 : val
 
+    let weights_ih_half1 = firstParent.weights_ih.map(firstHalfZeros);
+    let weights_ih_half2 = secondParent.weights_ih.map(secondHalfZeros);
+    this.weights_ih = weights_ih_half1.add(weights_ih_half2);
+
+    let weights_ho_half1 = firstParent.weights_ho.map(firstHalfZeros);
+    let weights_ho_half2 = secondParent.weights_ho.map(secondHalfZeros);
+    this.weights_ho = weights_ho_half1.add(weights_ho_half2);
+
+    let bias_h_half1 = firstParent.bias_h.map(firstHalfZeros);
+    let bias_h_half2 = secondParent.bias_h.map(secondHalfZeros);
+    this.bias_h = bias_h_half1.add(bias_h_half2);
+
+    let bias_o_half1 = firstParent.bias_o.map(firstHalfZeros);
+    let bias_o_half2 = secondParent.bias_o.map(secondHalfZeros);
+    this.bias_o = bias_o_half1.add(bias_o_half2);
+  }
 
 }

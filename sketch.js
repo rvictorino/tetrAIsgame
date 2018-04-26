@@ -48,6 +48,14 @@ function setup() {
       () =>  new Tetris(new NeuralNetwork(226, 500, 5)),
       // fitness function: score + time played
       i  => i.score + (Date.now() - i.startTime),
+      // crossover function
+      function(a, b) {
+        var child1 = new NeuralNetwork(226, 500, 5)
+        var child2 = new NeuralNetwork(226, 500, 5)
+        child1.crossover(a, b)
+        child2.crossover(b, a)
+        return [child1, child2]
+      },
       // mutation function
       i => i.nn.mutate(0.1),
       // function to know if inviv is in final state, waiting to evolve to next gen
@@ -88,7 +96,7 @@ function draw() {
     // play all!
     ga.run()
 
-    // draw only the best of previous gen ?
+    // draw only the best of previous gen
     ga.best.show()
   }
 }

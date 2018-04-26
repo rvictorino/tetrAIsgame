@@ -11,6 +11,7 @@ This version follows [Tetris Guideline](http://tetris.wikia.com/wiki/Tetris_Guid
 
 ## Progress
 - [x] Tetris game following Tetris Guideline
-- [ ] Prepare data for NN: (normalizing...)
+- [x] Prepare data for NN: (normalizing...)
 - [ ] Use Genetic Algorithm to "train" Neural Network
-- [ ] Maybe submit to [The Coding Train](https://github.com/CodingTrain), since this project is highly inspired by them. 
+- [ ] Maybe submit to [The Coding Train](https://github.com/CodingTrain), since this project is highly inspired by them.
+- [ ] Maybe submit crossover function added to the Toy NN to [The Coding Train](https://github.com/CodingTrain), since this project needed this code and it could be used for neuro-evolution projects. 
