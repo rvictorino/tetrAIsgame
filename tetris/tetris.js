@@ -232,7 +232,34 @@ class Tetris {
   }
 
 
-  // called in the loop. Dnaw game and entities
+  reset() {
+    this.startTime = Date.now()
+    this.score = 0
+    this.level = 1
+    this.cells = []
+    this.gameOver = false
+    this.fixing = false
+    this.scrolling = false
+    this.deleting = false
+
+    this.downCooldown = true
+
+    // init game grid
+    for (var y = 0; y < ROWS; y++) {
+      var row = []
+      for (var x = 0; x < COLS; x++) {
+        row.push(new Cell(x, y))
+      }
+      this.cells.push(row)
+    }
+
+    // init current and next pieces
+    this.currentPiece = this.getRandomPiece()
+    this.nextPiece = this.getRandomPiece()
+  }
+
+
+  // called in the loop. Draw game and entities
   show() {
     this.cells.forEach((row, i) => {
       if (i >= INVISIBLE_ROWS) {
@@ -253,6 +280,15 @@ class Tetris {
     textSize(SIZE)
     textAlign(LEFT, CENTER)
     text(this.score, COLS * SIZE + SIZE, SIZE * 3)
+
+    let arr = ['down', 'up', 'left', 'right']
+    arr.forEach((a, i) => {
+      fill(236, 240, 241)
+      if (i == this.actionPerformed) {
+        fill(155, 89, 182)
+      }
+      text(a, WIDTH + SIZE, HEIGHT / 2 + SIZE + SIZE * i)
+    })
   }
 
 
@@ -306,12 +342,14 @@ class Tetris {
       case 3:
         // arrow right
         // console.log('right')
-        this.movePiece(-1)
+        this.movePiece(1)
         break
       case 4:
         // no action performed
         // console.log('no action')
         break
     }
+
+    this.actionPerformed = maxScoreIndex
   }
 }

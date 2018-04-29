@@ -170,26 +170,36 @@ class NeuralNetwork {
   }
 
   // Crossover for neuro-evolution
-  crossover(firstParent, secondParent) {
-    let half = Math.floor(this.rows / 2);
-    let firstHalfZeros = (val, i, j) => i <= half ? 0 : val
-    let secondHalfZeros = (val, i, j) => i > half ? 0 : val
+  // firstParent and secondParent are NeuralNetwork instances
+  // cut function is an arbitrary function taking (val, i, j) value for each
+  // matrix value and returns true or false wether it should be kept in the
+  // first parent and not in the second or the contrary.
+  // ex:  (val, i, j) => i % 2 == 0
+  static crossover(firstParent, secondParent, cutFunction) {
 
-    let weights_ih_half1 = firstParent.weights_ih.map(firstHalfZeros);
-    let weights_ih_half2 = secondParent.weights_ih.map(secondHalfZeros);
-    this.weights_ih = weights_ih_half1.add(weights_ih_half2);
+    let child = new NeuralNetwork(firstParent);
 
-    let weights_ho_half1 = firstParent.weights_ho.map(firstHalfZeros);
-    let weights_ho_half2 = secondParent.weights_ho.map(secondHalfZeros);
-    this.weights_ho = weights_ho_half1.add(weights_ho_half2);
+    let firstMapFunction = (val, i, j) => cutFunction(val, i, j) ? val : 0;
+    let secondMapFunction = (val, i, j) => !cutFunction(val, i, j) ? val : 0;
 
-    let bias_h_half1 = firstParent.bias_h.map(firstHalfZeros);
-    let bias_h_half2 = secondParent.bias_h.map(secondHalfZeros);
-    this.bias_h = bias_h_half1.add(bias_h_half2);
+    // mix !
+    let weights_ih_half1 = firstParent.weights_ih.map(firstMapFunction);
+    let weights_ih_half2 = secondParent.weights_ih.map(secondMapFunction);
+    child.weights_ih = weights_ih_half1.add(weights_ih_half2);
 
-    let bias_o_half1 = firstParent.bias_o.map(firstHalfZeros);
-    let bias_o_half2 = secondParent.bias_o.map(secondHalfZeros);
-    this.bias_o = bias_o_half1.add(bias_o_half2);
+    let weights_ho_half1 = firstParent.weights_ho.map(firstMapFunction);
+    let weights_ho_half2 = secondParent.weights_ho.map(secondMapFunction);
+    child.weights_ho = weights_ho_half1.add(weights_ho_half2);
+
+    let bias_h_half1 = firstParent.bias_h.map(firstMapFunction);
+    let bias_h_half2 = secondParent.bias_h.map(secondMapFunction);
+    child.bias_h = bias_h_half1.add(bias_h_half2);
+
+    let bias_o_half1 = firstParent.bias_o.map(firstMapFunction);
+    let bias_o_half2 = secondParent.bias_o.map(secondMapFunction);
+    child.bias_o = bias_o_half1.add(bias_o_half2);
+
+    return child;
   }
 
 }

@@ -4,7 +4,7 @@ class GA {
     this.size = populationSize
     this.generations = numberOfGenerations
     // when creating new gen, 30% will be used as parents
-    this.offSpringThreshold = Math.floor(this.size * 0.3)
+    this.offSpringThreshold = Math.floor(this.size * 0.4)
 
     this.fitnessFunc = fitnessFunc
     this.individualCreationFunc = individualCreationFunc
@@ -17,7 +17,7 @@ class GA {
     this.population = []
 
     // init population
-    for(var i = 0; i < this.size; i++) {
+    for (var i = 0; i < this.size; i++) {
       this.population.push(new Individual(this.individualCreationFunc()))
     }
 
@@ -25,40 +25,43 @@ class GA {
     this.best = this.population[0]
   }
 
-  get best() {
+  getBest() {
     return this.best.obj
   }
 
 
   nextGen() {
-    var nextPopulation = []
     // selection
-    var nextPopulation = this.select()
+    var nextPopulation = this.selectParents()
     // crossover
     nextPopulation = this.crossover(nextPopulation)
     // mutation
     nextPopulation = this.mutate(nextPopulation)
 
     // fill with random new individuals
-    for(var i = nextPopulation.length; i < this.size; i++) {
+    for (var i = nextPopulation.length; i < this.size; i++) {
       nextPopulation.push(new Individual(this.individualCreationFunc()))
     }
     // apply changes
     this.population = nextPopulation
+
     // new gen complete !
     this.currentGen++
   }
 
 
-  select() {
-    calculateFitness()
+  selectParents() {
+    this.calculateFitness()
     // init next population
     var selectedPopulation = []
     // select 2 parents
-    for(var i = 0; i < this.offSpringThreshold; i+= 2) {
+    for (var i = 0; i < this.offSpringThreshold; i += 2) {
       // may select same parent twice, but checking might be too expensive
-      selectedPopulation.push(...this.selectTwo())
+      var parents = this.selectTwo()
+      selectedPopulation.push(parents[0])
+      selectedPopulation.push(parents[1])
     }
+    console.log(selectedPopulation)
 
     return selectedPopulation
   }
@@ -68,14 +71,14 @@ class GA {
     // Stochastic universal sampling: 2 selections evenly spaced on the wheel
     // the best the fitness, the higher the probabity to be chosen
     var rand1 = Math.random()
-    var rand2 = rand1 >= 0.5 ?rand1 - 0.5 : rand1 + 0.5
+    var rand2 = rand1 >= 0.5 ? rand1 - 0.5 : rand1 + 0.5
     var probSum = 0
     var selected = []
     var selectedIndexes = []
     // first selection
-    for(var i = 0; i < this.population.length; i++) {
+    for (var i = 0; i < this.population.length; i++) {
       probSum += this.population[i].fitness
-      if(probSum > rand1) {
+      if (probSum > rand1) {
         selected.push(this.population[i])
         selectedIndexes.push(i)
         break
@@ -83,9 +86,9 @@ class GA {
     }
     probSum = 0
     // second selection
-    for(var i = 0; i < this.population.length; i++) {
+    for (var i = 0; i < this.population.length; i++) {
       probSum += this.population[i].fitness
-      if(probSum > rand2) {
+      if (probSum > rand2) {
         selected.push(this.population[i])
         selectedIndexes.push(i)
         break
@@ -94,8 +97,8 @@ class GA {
     // remove selected from population
     // sort first by index so we slice biggest first, thus not changing
     // second index position in array after splicing
-    selectedIndexes.sort( (a, b) => b - a)
-    selectedIndexes.forEach( i => this.population.splice(i, 1) )
+    selectedIndexes.sort((a, b) => b - a)
+    selectedIndexes.forEach(i => this.population.splice(i, 1))
 
     // return selected individuals
     return selected
@@ -105,7 +108,7 @@ class GA {
 
     var nextPopulation = []
 
-    for(var i = 0; i < population; i+=2) {
+    for (var i = 0; i < population; i += 2) {
       var parent1 = population[i]
       var parent2 = population[i + 1]
 
@@ -115,11 +118,14 @@ class GA {
     }
 
     // clear fitness values
-    nextPopulation.forEach( i => i.fitness = 0)
+    nextPopulation.forEach(i => i.fitness = 0)
+
+    return nextPopulation
   }
 
   mutate(population) {
-    
+    //TODO
+    return population
   }
 
   calculateFitness() {
@@ -128,22 +134,24 @@ class GA {
     this.best = this.population[0]
 
     // calculate all fitnesses and store best element
-    for(var indiv of this.population) {
+    for (var indiv of this.population) {
       indiv.fitness = this.fitnessFunc(indiv.obj)
-      this.best = indiv.fitness > this.best.fitness ? indiv : this.best
+      if (indiv.fitness > this.best.fitness) {
+        this.best = indiv
+      }
       fitnessSum += indiv.fitness
     }
 
     // nomalize fitness
-    this.population.forEach( i => i.fitness /= fitnessSum )
+    this.population.forEach(i => i.fitness /= fitnessSum)
     // sort by fitness
-    this.population.sort( (a, b) => b.fitness - a.fitness )
+    this.population.sort((a, b) => b.fitness - a.fitness)
   }
 
 
   needToEvolve() {
-    for(var indiv of this.population) {
-      if(!this.isFinalStateFunc(indiv.obj)) {
+    for (var indiv of this.population) {
+      if (!this.isFinalStateFunc(indiv.obj)) {
         return false
       }
     }
@@ -152,14 +160,14 @@ class GA {
 
   run() {
     this.population.forEach(g => {
-      if(!this.isFinalStateFunc(g.obj)) {
+      if (!this.isFinalStateFunc(g.obj)) {
         this.runFunc(g.obj)
       }
     })
   }
 
   show() {
-    this.population.forEach( (p, i) => {
+    this.population.forEach((p, i) => {
       image(p.obj.gameOver ? brainKO : brainOK,
         WIDTH + 2 * IMG_PADDING + (i % VIZ_NB_PER_LINE) * VIZ_SIZE,
         2 * IMG_PADDING + Math.floor(i / VIZ_NB_PER_LINE) * VIZ_SIZE,

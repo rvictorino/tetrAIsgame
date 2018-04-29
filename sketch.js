@@ -15,11 +15,21 @@ const SIZE = Math.floor(2 * (BASE_WIDTH) / 3 / COLS)
 const WIDTH = (COLS + 6) * SIZE
 const HEIGHT = (ROWS - INVISIBLE_ROWS) * SIZE
 
+// NN
+/** Neural Networks settings:
+ I: 226 (3 + 3 + 220) inputs: current piece type & position, next piece type & position, game grid cells (free / occupied) * 220
+ H: Arbitrary ??: 500
+ O: 5 outputs: Arrow Up, down, left, right, no action
+**/
+const I = 226
+const H = 500
+const O = 5
+
 // GA
-const NN_POPULATION = 50
+const NN_POPULATION = 5
 const MAX_GENERATIONS = 50
 const VIZ_NB_PER_LINE = 10
-const VIZ_SIZE =  Math.floor(BASE_WIDTH / VIZ_NB_PER_LINE)
+const VIZ_SIZE = Math.floor(BASE_WIDTH / VIZ_NB_PER_LINE)
 const IMG_PADDING = 5
 
 // switch from player to IA playing mode
@@ -35,25 +45,22 @@ function setup() {
   // init canvas, speed and game
   createCanvas(WIDTH * (PLAYER_MODE ? 1 : 2), HEIGHT)
 
-  if(PLAYER_MODE) {
+  if (PLAYER_MODE) {
     game = new Tetris()
   } else {
-    /** Neural Networks settings:
-     I: 226 (3 + 3 + 220) inputs: current piece type & position, next piece type & position, game grid cells (free / occupied) * 220
-     H: Arbitrary ??: 500
-     O: 5 outputs: Arrow Up, down, left, right, no action
-    **/
+
     ga = new GA(NN_POPULATION, MAX_GENERATIONS,
       // individual creation function
-      () =>  new Tetris(new NeuralNetwork(226, 500, 5)),
+      () => new Tetris(new NeuralNetwork(I, H, O)),
       // fitness function: score + time played
-      i  => i.score + (Date.now() - i.startTime),
+      i => i.score + (Date.now() - i.startTime),
       // crossover function
-      function(a, b) {
-        var child1 = new NeuralNetwork(226, 500, 5)
-        var child2 = new NeuralNetwork(226, 500, 5)
-        child1.crossover(a, b)
-        child2.crossover(b, a)
+      (a, b) => {
+        var nnCrossover = (val, i, j) => i % 2 == 0
+
+        var child1 = new Tetris(NeuralNetwork.crossover(a.nn, b.nn, nnCrossover))
+        var child2 = new Tetris(NeuralNetwork.crossover(b.nn, a.nn, nnCrossover))
+
         return [child1, child2]
       },
       // mutation function
@@ -81,13 +88,14 @@ function setup() {
 function draw() {
   // clear canvas
   background(52, 73, 94)
-  if(PLAYER_MODE && !game.gameOver) {
+  if (PLAYER_MODE && !game.gameOver) {
     game.update()
     game.show()
   } else {
     // evolve if needed
-    if(ga.needToEvolve() && ga.currentGen < MAX_GENERATIONS) {
+    if (ga.needToEvolve() && ga.currentGen < MAX_GENERATIONS) {
       ga.nextGen()
+      ga.population.forEach(i => i.obj.reset())
     }
 
     // show data about population
@@ -97,13 +105,13 @@ function draw() {
     ga.run()
 
     // draw only the best of previous gen
-    ga.best.show()
+    ga.getBest().show()
   }
 }
 
 
 function keyPressed() {
-  if(!PLAYER_MODE)
+  if (!PLAYER_MODE)
     return
   // detect human interaction
   // and trigger related action
