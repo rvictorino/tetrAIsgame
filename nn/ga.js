@@ -1,6 +1,6 @@
 class GA {
 
-  constructor(populationSize, numberOfGenerations, individualCreationFunc, fitnessFunc, crossoverFunc, mutationFunc, isFinalStateFunc, runFunc) {
+  constructor(populationSize, numberOfGenerations, individualCreationFunc, fitnessFunc, crossoverFunc, mutationFunc, isFinalStateFunc, runFunc, resetFunc) {
     this.size = populationSize
     this.generations = numberOfGenerations
     // when creating new gen, 30% will be used as parents
@@ -12,6 +12,7 @@ class GA {
     this.mutationFunc = mutationFunc
     this.isFinalStateFunc = isFinalStateFunc
     this.runFunc = runFunc
+    this.resetFunc = resetFunc
 
     this.currentGen = 0
     this.population = []
@@ -33,6 +34,10 @@ class GA {
   nextGen() {
     // selection
     var nextPopulation = this.selectParents()
+
+    // reset all old individuals
+    this.resetPopulation(nextPopulation)
+
     // crossover
     nextPopulation = this.crossover(nextPopulation)
     // mutation
@@ -45,8 +50,10 @@ class GA {
     // apply changes
     this.population = nextPopulation
 
-    // new gen complete !
-    this.currentGen++
+    this.best =
+
+      // new gen complete !
+      this.currentGen++
   }
 
 
@@ -61,7 +68,6 @@ class GA {
       selectedPopulation.push(parents[0])
       selectedPopulation.push(parents[1])
     }
-    console.log(selectedPopulation)
 
     return selectedPopulation
   }
@@ -128,19 +134,29 @@ class GA {
     return population
   }
 
+
+  resetPopulation(population) {
+    population.forEach(i => i.obj = this.resetFunc(i.obj))
+  }
+
+
   calculateFitness() {
     // initialize fitness
-    var fitnessSum = 0
+    let fitnessSum = 0
+    let best
     this.best = this.population[0]
+
 
     // calculate all fitnesses and store best element
     for (var indiv of this.population) {
       indiv.fitness = this.fitnessFunc(indiv.obj)
       if (indiv.fitness > this.best.fitness) {
-        this.best = indiv
+        best = indiv
       }
       fitnessSum += indiv.fitness
     }
+
+    this.best = best
 
     // nomalize fitness
     this.population.forEach(i => i.fitness /= fitnessSum)
@@ -183,6 +199,8 @@ class Individual {
   constructor(obj) {
     this.obj = obj
     this.fitness = 0
+    // generate a random string id
+    this.id = Math.random().toString(36).substring(4);
   }
 
 }

@@ -26,7 +26,7 @@ const H = 500
 const O = 5
 
 // GA
-const NN_POPULATION = 5
+const NN_POPULATION = 3
 const MAX_GENERATIONS = 50
 const VIZ_NB_PER_LINE = 10
 const VIZ_SIZE = Math.floor(BASE_WIDTH / VIZ_NB_PER_LINE)
@@ -80,6 +80,10 @@ function setup() {
 
         // update game and entities state
         i.update()
+      },
+      // reset function: used to reset existing individual for next generation
+      i => {
+        return new Tetris(i.nn)
       })
   }
 }
@@ -95,7 +99,6 @@ function draw() {
     // evolve if needed
     if (ga.needToEvolve() && ga.currentGen < MAX_GENERATIONS) {
       ga.nextGen()
-      ga.population.forEach(i => i.obj.reset())
     }
 
     // show data about population
@@ -106,6 +109,7 @@ function draw() {
 
     // draw only the best of previous gen
     ga.getBest().show()
+    console.log(ga.best.id)
   }
 }
 

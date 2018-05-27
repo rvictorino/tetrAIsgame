@@ -232,33 +232,6 @@ class Tetris {
   }
 
 
-  reset() {
-    this.startTime = Date.now()
-    this.score = 0
-    this.level = 1
-    this.cells = []
-    this.gameOver = false
-    this.fixing = false
-    this.scrolling = false
-    this.deleting = false
-
-    this.downCooldown = true
-
-    // init game grid
-    for (var y = 0; y < ROWS; y++) {
-      var row = []
-      for (var x = 0; x < COLS; x++) {
-        row.push(new Cell(x, y))
-      }
-      this.cells.push(row)
-    }
-
-    // init current and next pieces
-    this.currentPiece = this.getRandomPiece()
-    this.nextPiece = this.getRandomPiece()
-  }
-
-
   // called in the loop. Draw game and entities
   show() {
     this.cells.forEach((row, i) => {
